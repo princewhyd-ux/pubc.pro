@@ -6,11 +6,18 @@
 #include <string>
 #include <cmath>
 
+// ==========================================
+// تعريفات الهياكل الأساسية (معرفة مرة واحدة فقط هنا)
+// ==========================================
+
 // تعريف أنواع المجسمات لتسهيل التعامل معها
-#ifndef MAP_MANAGER_H
 enum class ColliderType { STATIC_WALL, STATIC_GROUND, STATIC_PROP, TRIGGER_ZONE };
-struct EnvironmentCollider { BoundingBox bounds; ColliderType type; std::string tag; };
-#endif
+
+struct EnvironmentCollider { 
+    BoundingBox bounds; 
+    ColliderType type; 
+    std::string tag; 
+};
 
 // هيكل يمثل الكائنات المتحركة (اللاعب، الأعداء، السيارات)
 struct DynamicCollider {
@@ -62,7 +69,7 @@ public:
                 nearby.push_back(col);
             }
         }
-        return nearby; // إرجاع 5 جدران أفضل بكثير من إرجاع 1000!
+        return nearby; // إرجاع الجدران القريبة فقط
     }
 
     // ==========================================
