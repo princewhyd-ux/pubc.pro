@@ -17,15 +17,14 @@ public:
      * @brief تهيئة الأنيميشن الوهمي وحجز الذاكرة. 
      * تُستدعى مرة واحدة فقط عند تحميل اللعبة لحماية الأندرويد من التقطيع (FPS Drop).
      * @param boneCount عدد عظام نموذج اللاعب
-     * @param bones مصفوفة العظام من النموذج
      */
-    void Init(int boneCount, BoneInfo* bones) {
+    void Init(int boneCount) { // 🚨 تم حذف المعامل الثاني الخاص بالعظام لتوافق Raylib 5.0
         if (isInitialized) return;
 
         blendedAnim.boneCount = boneCount;
         blendedAnim.keyframeCount = 1;  // تحديث Raylib 5.0: نحتاج إطاراً واحداً فقط للدمج اللحظي
-        blendedAnim.bones = bones;      // نربط الأنيميشن الوهمي بعظام اللاعب الحقيقية
         blendedAnim.name[0] = '\0';     // اسم فارغ
+        // 🚨 تم حذف سطر ربط العظام لأن Raylib 5.0 لم يعد يحتاجه هنا
 
         // حجز ذاكرة للإطار المدمج باستخدام دوال C الأساسية للحصول على أقصى سرعة
         // keyframePoses هو مصفوفة ثنائية الأبعاد [رقم الإطار][رقم العظمة]

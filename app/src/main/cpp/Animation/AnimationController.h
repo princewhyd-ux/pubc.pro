@@ -45,8 +45,11 @@ public:
      * @brief تهيئة المحرك وربط الحركات من ملف الـ GLB بشكل ذكي
      */
     void Init(Model& model, ModelAnimation* anims, int animCount) {
+        if (animCount <= 0) return; // حماية المحرك من العمل بدون ملف أنيميشن
+
         // تهيئة محرك الدمج (BlendTree) لحجز الذاكرة مرة واحدة فقط للأندرويد
-        blendTree.Init(model.boneCount, model.bones);
+        // 🚨 تحديث Raylib 5.0: نرسل عدد العظام فقط
+        blendTree.Init(anims[0].boneCount);
 
         // محرك البحث الذكي لربط الأسماء بالأنيميشنات الحقيقية
         for (int i = 0; i < animCount; i++) {
@@ -147,15 +150,15 @@ public:
         
         int currentFrame = (int)overrideAnimTime;
 
-        // التحقق من انتهاء الحركة
-        if (currentFrame >= targetAnim->frameCount) {
+        // 🚨 تحديث Raylib 5.0: تم تغيير الكود من frameCount إلى keyframeCount
+        if (currentFrame >= targetAnim->keyframeCount) {
             if (loop) {
                 // إعادة الحركة من البداية
                 overrideAnimTime = 0.0f;
                 currentFrame = 0;
             } else {
                 // تجميد الحركة عند الإطار الأخير وإلغاء حالة الاستبدال
-                currentFrame = targetAnim->frameCount - 1;
+                currentFrame = targetAnim->keyframeCount - 1;
                 isPlayingOverride = false; 
             }
         }
