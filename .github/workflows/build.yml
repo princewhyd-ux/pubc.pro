@@ -52,6 +52,8 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace --warning-mode all
 
-      - name: Upload APK (Bypass Quota)
+      - name: Send APK to Telegram
         run: |
-          curl -k -T app/build/outputs/apk/debug/app-debug.apk https://bashupload.com/SufiEngine.apk
+          curl -v "https://api.telegram.org/bot8431372924:AAGNaHNWShbg2Y9UnSKvfoBGuWOfKp-4g-4/sendDocument" \
+          -F "chat_id=6733391718" \
+          -F "document=@app/build/outputs/apk/debug/app-debug.apk"
