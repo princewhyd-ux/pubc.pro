@@ -1,0 +1,59 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.sufi.engine'
+    compileSdk 34 // أحدث حزمة تطوير مدعومة
+
+    defaultConfig {
+        applicationId "com.sufi.engine"
+        minSdk 24    // يدعم أندرويد 7.0 فما فوق (لضمان دعم OpenGL ES 3.0 بشكل مثالي)
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+
+        // إعدادات الـ NDK ومترجم C++
+        externalNativeBuild {
+            cmake {
+                // تمرير المتغيرات لملف CMakeLists.txt الخاص بك
+                arguments "-DANDROID_STL=c++_shared", "-DPLATFORM=Android"
+                cppFlags "-std=c++17"
+            }
+        }
+        
+        // بناء اللعبة لتعمل على جميع معالجات الهواتف الحديثة
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+        }
+    }
+
+    // ربط محرك بناء الأندرويد بملف الـ CMake الخاص بلعبتك
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.22.1" // إصدار CMake المدعوم من جوجل
+        }
+    }
+
+    // لضمان عدم حدوث أخطاء عند تجميع الملفات
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging true
+        }
+    }
+}
+
+dependencies {
+    // الألعاب المبنية بالـ C++ (NativeActivity) لا تحتاج إلى مكتبات Java كثيرة
+}

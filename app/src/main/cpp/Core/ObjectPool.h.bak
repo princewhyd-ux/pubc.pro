@@ -1,0 +1,32 @@
+#pragma once
+#include <vector>
+#include <memory>
+#include <functional>
+
+template <class T>
+class ObjectPool {
+private:
+    std::vector<std::unique_ptr<T>> pool;
+    std::vector<T*> available;
+
+public:
+    ObjectPool(size_t initialSize) {
+        for (size_t i = 0; i < initialSize; ++i) {
+            auto obj = std::make_unique<T>();
+            available.push_back(obj.get());
+            pool.push_back(std::move(obj));
+        }
+    }
+
+    T* Get() {
+        if (available.empty()) return nullptr; // أو يمكن توسعة الـ Pool هنا
+        T* obj = available.back();
+        available.pop_back();
+        return obj;
+    }
+
+    void Return(T* obj) {
+        // إعادة تعيين حالة الكائن قبل إرجاعه
+        available.push_back(obj);
+    }
+};

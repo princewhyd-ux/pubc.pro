@@ -1,0 +1,21 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// اسم محركك ولعبتك (سيظهر أثناء البناء)
+rootProject.name = "PubcMobile"
+
+// تضمين مجلد التطبيق الأساسي الذي يحتوي على الكود والـ CMakeLists
+include ':app'

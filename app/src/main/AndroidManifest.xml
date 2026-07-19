@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sufi.engine">
+
+    <!-- ========================================== -->
+    <!-- 1. الأذونات ومتطلبات الهاردوير (Permissions) -->
+    <!-- ========================================== -->
+    
+    <!-- منع انطفاء الشاشة أثناء اللعب -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    
+    <!-- لدعم نظام اهتزاز الكاميرا (Trauma Shake) عند إطلاق النار أو الانفجارات -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    
+    <!-- اختياري: مفيد إذا أردت إضافة إعلانات أو ميزات أونلاين لاحقاً -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- اللعبة تتطلب جهازاً يدعم OpenGL ES 3.0 (متوفر في 99% من الهواتف الحالية) -->
+    <uses-feature android:glEsVersion="0x00030000" android:required="true" />
+    
+    <!-- تفعيل اللمس المتعدد المتقدم لضمان عمل الجويستيك وتحريك الكاميرا في نفس الوقت -->
+    <uses-feature android:name="android.hardware.touchscreen.multitouch.distinct" android:required="true" />
+
+    <!-- ========================================== -->
+    <!-- 2. إعدادات التطبيق (Application Setup) -->
+    <!-- ========================================== -->
+    
+    <!-- hasCode="false" تعني أننا نستخدم C++ بالكامل ولا يوجد كود Java لترجمته -->
+    <application
+        android:allowBackup="true"
+        android:hasCode="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="Sufi Engine"
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen"> <!-- إخفاء شريط الإشعارات العلوي -->
+
+        <!-- ========================================== -->
+        <!-- 3. واجهة اللعبة الأساسية (Native Activity) -->
+        <!-- ========================================== -->
+        <activity
+            android:name="android.app.NativeActivity"
+            android:exported="true"
+            android:configChanges="orientation|keyboardHidden|screenSize" <!-- يمنع إعادة تشغيل اللعبة عند تدوير الهاتف -->
+            android:screenOrientation="sensorLandscape" <!-- تثبيت الشاشة بالعرض -->
+            android:launchMode="singleTask"
+            android:clearTaskOnLaunch="true">
+            
+            <!-- [مهم جداً] هذا السطر يربط الأندرويد بملف الـ C++ الذي جمعناه في CMakeLists -->
+            <!-- يجب أن يطابق تماماً اسم الـ project() في ملف الـ CMake -->
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="SufiEngine" />
+
+            <!-- تحديد هذه الواجهة كأول واجهة تفتح عند النقر على أيقونة التطبيق -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>
