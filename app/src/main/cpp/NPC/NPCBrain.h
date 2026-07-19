@@ -5,12 +5,7 @@
 #include <vector>
 #include <cmath>
 #include <string>
-
-// (نفس الهيكل من MapManager لضمان عدم وجود أخطاء في الاستدعاء)
-#ifndef MAP_MANAGER_H
-enum class ColliderType { STATIC_WALL, STATIC_GROUND, STATIC_PROP, TRIGGER_ZONE };
-struct EnvironmentCollider { BoundingBox bounds; ColliderType type; std::string tag; };
-#endif
+#include "../Physics/CollisionSystem.h" // 🚨 الاستدعاء السحري
 
 // حالات الذكاء الاصطناعي
 enum class NPCState {
@@ -247,12 +242,13 @@ private:
                 }
                 break;
 
-            case NPCState::RETREAT:
+            case NPCState::RETREAT: { // 🚨 أضفنا القوس هنا
                 // الركض في الاتجاه المعاكس للاعب
                 Vector3 retreatDir = Vector3Normalize(Vector3Subtract(position, lastKnownTargetPos));
                 Vector3 retreatPos = Vector3Add(position, Vector3Scale(retreatDir, 10.0f));
                 MoveTowards(retreatPos, runSpeed, dt);
                 break;
+            } // 🚨 وأغلقنا القوس هنا
                 
             case NPCState::TAKE_COVER:
                 // (سيتم تطويرها بربطها مع خوارزمية بحث عن الجدران في البيئة)
