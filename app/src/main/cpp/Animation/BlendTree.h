@@ -23,14 +23,14 @@ public:
         if (isInitialized) return;
 
         blendedAnim.boneCount = boneCount;
-        blendedAnim.frameCount = 1;  // نحتاج إطاراً واحداً فقط للدمج اللحظي
-        blendedAnim.bones = bones;   // نربط الأنيميشن الوهمي بعظام اللاعب الحقيقية
-        blendedAnim.name[0] = '\0';  // اسم فارغ
+        blendedAnim.keyframeCount = 1;  // تحديث Raylib 5.0: نحتاج إطاراً واحداً فقط للدمج اللحظي
+        blendedAnim.bones = bones;      // نربط الأنيميشن الوهمي بعظام اللاعب الحقيقية
+        blendedAnim.name[0] = '\0';     // اسم فارغ
 
         // حجز ذاكرة للإطار المدمج باستخدام دوال C الأساسية للحصول على أقصى سرعة
-        // framePoses هو مصفوفة ثنائية الأبعاد [رقم الإطار][رقم العظمة]
-        blendedAnim.framePoses = (Transform**)MemAlloc(sizeof(Transform*));
-        blendedAnim.framePoses[0] = (Transform*)MemAlloc(boneCount * sizeof(Transform));
+        // keyframePoses هو مصفوفة ثنائية الأبعاد [رقم الإطار][رقم العظمة]
+        blendedAnim.keyframePoses = (Transform**)MemAlloc(sizeof(Transform*));
+        blendedAnim.keyframePoses[0] = (Transform*)MemAlloc(boneCount * sizeof(Transform));
         
         isInitialized = true;
         std::cout << "[BlendTree] Initialized successfully with " << boneCount << " bones." << std::endl;
@@ -45,30 +45,32 @@ public:
      * @param blendFactor نسبة الدمج (0.0 = الحركة الأولى 100%، 1.0 = الحركة الثانية 100%)
      */
     void UpdateBlend1D(Model& model, const ModelAnimation& animA, float timeA, const ModelAnimation& animB, float timeB, float blendFactor) {
-        if (!isInitialized || animA.frameCount == 0 || animB.frameCount == 0) return;
+        // تحديث Raylib 5.0: استخدام keyframeCount
+        if (!isInitialized || animA.keyframeCount == 0 || animB.keyframeCount == 0) return;
 
         // 1. تحديد الإطار الحالي لكل حركة بناءً على الوقت (Normalized Time)
         // هذا يمنع انزلاق الأقدام (Foot Sliding) لأننا نزامن دورة الخطوة
-        int frameA = (int)(timeA * animA.frameCount) % animA.frameCount;
-        int frameB = (int)(timeB * animB.frameCount) % animB.frameCount;
+        int frameA = (int)(timeA * animA.keyframeCount) % animA.keyframeCount;
+        int frameB = (int)(timeB * animB.keyframeCount) % animB.keyframeCount;
 
         // 2. ضمان بقاء نسبة الدمج في حدود الأمان
         blendFactor = Clamp(blendFactor, 0.0f, 1.0f);
 
         // 3. دمج كل عظمة في الجسم على حدة
         for (int i = 0; i < blendedAnim.boneCount; i++) {
-            Transform transformA = animA.framePoses[frameA][i];
-            Transform transformB = animB.framePoses[frameB][i];
+            // تحديث Raylib 5.0: استخدام keyframePoses
+            Transform transformA = animA.keyframePoses[frameA][i];
+            Transform transformB = animB.keyframePoses[frameB][i];
 
             // أ) دمج الموقع (Translation) بخط مستقيم
-            blendedAnim.framePoses[0][i].translation = Vector3Lerp(transformA.translation, transformB.translation, blendFactor);
+            blendedAnim.keyframePoses[0][i].translation = Vector3Lerp(transformA.translation, transformB.translation, blendFactor);
             
             // ب) دمج الدوران (Rotation - Quaternion) باستخدام Slerp 
             // (الـ Lerp العادي يشوه العظام عند الدوران، الـ Slerp يدورها بشكل كروي ناعم)
-            blendedAnim.framePoses[0][i].rotation = QuaternionSlerp(transformA.rotation, transformB.rotation, blendFactor);
+            blendedAnim.keyframePoses[0][i].rotation = QuaternionSlerp(transformA.rotation, transformB.rotation, blendFactor);
             
             // ج) دمج الحجم (Scale) بخط مستقيم
-            blendedAnim.framePoses[0][i].scale = Vector3Lerp(transformA.scale, transformB.scale, blendFactor);
+            blendedAnim.keyframePoses[0][i].scale = Vector3Lerp(transformA.scale, transformB.scale, blendFactor);
         }
 
         // 4. تطبيق الأنيميشن الوهمي على المجسم ليتم رسمه
@@ -81,11 +83,11 @@ public:
     void Unload() {
         if (isInitialized) {
             // يجب تحرير الذاكرة من الداخل للخارج لتجنب أخطاء المؤشرات (Dangling Pointers)
-            if (blendedAnim.framePoses) {
-                if (blendedAnim.framePoses[0]) {
-                    MemFree(blendedAnim.framePoses[0]);
+            if (blendedAnim.keyframePoses) {
+                if (blendedAnim.keyframePoses[0]) {
+                    MemFree(blendedAnim.keyframePoses[0]);
                 }
-                MemFree(blendedAnim.framePoses);
+                MemFree(blendedAnim.keyframePoses);
             }
             isInitialized = false;
         }
