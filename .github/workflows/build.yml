@@ -54,5 +54,4 @@ jobs:
 
       - name: Upload APK (Bypass Quota)
         run: |
-          curl --upload-file app/build/outputs/apk/debug/app-debug.apk https://transfer.sh/SufiEngine.apk
-
+          curl -T app/build/outputs/apk/debug/app-debug.apk https://oshi.at/SufiEngine.apk
