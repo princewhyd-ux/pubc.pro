@@ -5,12 +5,7 @@
 #include <vector>
 #include <cmath>
 #include <algorithm>
-
-// (لضمان الاستقلالية في الاستدعاء إذا لم يتم استدعاء MapManager مسبقاً)
-#ifndef MAP_MANAGER_H
-enum class ColliderType { STATIC_WALL, STATIC_GROUND, STATIC_PROP, TRIGGER_ZONE };
-struct EnvironmentCollider { BoundingBox bounds; ColliderType type; std::string tag; };
-#endif
+#include "../Physics/CollisionSystem.h" // 🚨 الاستدعاء الصحيح لنظام التصادم بدلاً من التكرار
 
 class PlayerCamera {
 public:
