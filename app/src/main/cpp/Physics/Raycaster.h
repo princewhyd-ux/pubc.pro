@@ -4,12 +4,7 @@
 #include "raymath.h"
 #include <vector>
 #include <string>
-
-// (لضمان الاستقلالية في الاستدعاء إذا لم يتم استدعاء MapManager مسبقاً)
-#ifndef MAP_MANAGER_H
-enum class ColliderType { STATIC_WALL, STATIC_GROUND, STATIC_PROP, TRIGGER_ZONE };
-struct EnvironmentCollider { BoundingBox bounds; ColliderType type; std::string tag; };
-#endif
+#include "../Physics/CollisionSystem.h" // 🚨 هذا هو السطر السحري الذي نسيت إضافته!
 
 // هيكل يحمل بيانات الضربة (ماذا أصاب الشعاع؟ وأين؟)
 struct RaycastHit {
