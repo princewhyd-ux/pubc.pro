@@ -22,6 +22,7 @@
 int main() {
     // 1. تهيئة شاشة الهاتف (الوضع العرضي والكامل)
     InitWindow(0, 0, "Sufi Engine - Mobile");
+    SetTraceLogLevel(LOG_ERROR);
     SetTargetFPS(60);
 
     int screenWidth = GetScreenWidth();
@@ -84,7 +85,7 @@ int main() {
 
         // 1. تحديث الإدخال (عصا التحكم والأزرار)
         joystick.Update();
-        // hud.Update(); // افتح هذا التعليق إذا كانت الـ HUD تحتاج تحديث
+        hud.Update(); // افتح هذا التعليق إذا كانت الـ HUD تحتاج تحديث
 
         // 2. تحديث الكاميرا (السحب بإصبعك على النصف الأيمن من الشاشة)
         Vector2 camDelta = {0.0f, 0.0f};
@@ -117,7 +118,7 @@ int main() {
             renderer.BeginUI();
                 // رسم واجهة المستخدم واللمس
                 joystick.Draw(); 
-                // hud.Draw(); 
+                hud.Draw(); 
 
                 DrawCircle(screenWidth / 2, screenHeight / 2, 2, GREEN);
                 DrawFPS(10, 10);
