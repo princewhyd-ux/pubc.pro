@@ -43,11 +43,18 @@ public:
         // ==========================================
         // تطبيق مصفوفاتك الأصلية لإصلاح نموذج اللاعب
         // ==========================================
-        Matrix offset = MatrixTranslate(0.0f, -26.78f, 30.55f);
-        Matrix scale  = MatrixScale(0.01f, 0.01f, 0.01f);
-        Matrix rot    = MatrixRotateX(PI / 2.0f); // تعديل نوم الشخصية على الأرض
-        
-        baseTransform = MatrixMultiply(MatrixMultiply(offset, scale), rot);
+        // 1. تصغير الحجم
+Matrix scale = MatrixScale(0.01f, 0.01f, 0.01f);
+
+// 2. تدوير لضبط وقوف الشخصية
+Matrix rot = MatrixRotateX(PI / 2.0f);
+
+// 3. النقل (تم تصغير القيم لتتناسب مع السكيل الجديد)
+Matrix offset = MatrixTranslate(0.0f, -0.26f, 0.30f); 
+
+// الترتيب الصحيح للضرب في Raylib
+baseTransform = MatrixMultiply(MatrixMultiply(scale, rot), offset);
+
     }
 
     // تفريغ الذاكرة للأنيميشن
