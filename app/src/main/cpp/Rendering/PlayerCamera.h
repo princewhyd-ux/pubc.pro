@@ -84,8 +84,9 @@ public:
         float targetHeadHeight = isCrouching ? (shoulderOffset.y * 0.6f) : shoulderOffset.y;
         Vector3 targetHeadPos = { playerPos.x, playerPos.y + targetHeadHeight, playerPos.z };
         
-        // تتبع سلس لحركة رأس اللاعب (يمنع اهتزاز الكاميرا عند صعود السلالم بسرعة)
-        currentHeadPos = Vector3Lerp(currentHeadPos, targetHeadPos, headFollowSmoothness * dt);
+        // 🚨 [تم التعديل هنا] تتبع سلس لحركة رأس اللاعب وحمايته من بطء الإطار الأول
+        float headLerpAmount = fminf(headFollowSmoothness * dt, 1.0f);
+        currentHeadPos = Vector3Lerp(currentHeadPos, targetHeadPos, headLerpAmount);
 
         // 2. حساب مصفوفة الدوران (Rotation Matrix)
         Matrix rotation = MatrixRotateXYZ({ pitch, yaw, 0.0f });
@@ -102,8 +103,9 @@ public:
         // 5. نظام الاصطدام (Camera Collision) لمنع اختراق الجدران
         Vector3 safePosition = HandleCollision(currentHeadPos, desiredPosition, colliders);
 
-        // 6. النعومة في الحركة (Camera Lag)
-        currentPosition = Vector3Lerp(currentPosition, safePosition, positionSmoothness * dt);
+        // 🚨 [تم التعديل هنا] النعومة في الحركة (Camera Lag) وحمايتها
+        float posLerpAmount = fminf(positionSmoothness * dt, 1.0f);
+        currentPosition = Vector3Lerp(currentPosition, safePosition, posLerpAmount);
 
         // 7. تطبيق نظام الاهتزاز (Trauma / Shake)
         Vector3 finalPos = currentPosition;
@@ -127,8 +129,9 @@ public:
             if (trauma < 0.0f) trauma = 0.0f;
         }
 
-        // 8. تحديث زاوية الرؤية الديناميكية (Dynamic FOV)
-        currentFOV = Lerp(currentFOV, targetFOV, fovSmoothness * dt);
+        // 🚨 [تم التعديل هنا] تحديث زاوية الرؤية الديناميكية (Dynamic FOV) وحمايتها
+        float fovLerpAmount = fminf(fovSmoothness * dt, 1.0f);
+        currentFOV = Lerp(currentFOV, targetFOV, fovLerpAmount);
         camera.fovy = currentFOV;
 
         // 9. تطبيق الإحداثيات النهائية على الكاميرا
